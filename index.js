@@ -28,8 +28,21 @@ const ObjectId = mongodb.ObjectId;
   const getPersonagemById = async (id) =>
     personagens.findOne({ _id: ObjectId(id) });
 
+  app.all("/*", (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+
+    res.header("Access-Control-Allow-Methods", "*");
+
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
+    );
+
+    next();
+  });
+
   app.get("/", (req, res) => {
-    res.send({ info: "Olá, Blue!" });
+    res.send({ info: "Hello world!" });
   });
 
   app.get("/personagens", async (req, res) => {
@@ -39,16 +52,14 @@ const ObjectId = mongodb.ObjectId;
   app.get("/personagens/:id", async (req, res) => {
     const id = req.params.id;
     const personagem = await getPersonagemById(id);
-    res.send({ personagem });
+    res.send(personagem);
   });
 
   app.post("/personagens", async (req, res) => {
     const objeto = req.body;
 
     if (!objeto || !objeto.nome || !objeto.imagemUrl) {
-      res.send(
-        "Requisição inválida, certifique-se que tenha os campos nome e imagemUrl"
-      );
+      res.send("Objeto inválido!");
       return;
     }
 
@@ -62,7 +73,8 @@ const ObjectId = mongodb.ObjectId;
     res.send(objeto);
   });
 
-  //[PUT] Atualizar personagem
+
+
   app.put("/personagens/:id", async (req, res) => {
     const id = req.params.id;
     const objeto = req.body;
@@ -78,7 +90,8 @@ const ObjectId = mongodb.ObjectId;
     );
   });
 
-  //[DELETE] Deleta um personagem
+
+  
   app.delete("/personagens/:id", async (req, res) => {
     const id = req.params.id;
 
